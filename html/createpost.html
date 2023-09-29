@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reddit Paylaşım Formu</title>
+  <link href="css/createpost.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="PostCreation-box">
+    <h2>Reddit Paylaşım Formu</h2>
+    <form id="postForm" action="/create-post" method="POST">
+      <div id="postTypeDropdown" class="user-box">
+        <select id="postType" name="postType">
+          <option value="text">Metin Paylaşımı</option>
+          <option value="link">Link Paylaşımı</option>
+        </select>
+        <label for="postType">Paylaşım Türü:</label>
+      </div>      
+      <div class="user-box">
+        <input type="text" id="subredditName" name="subredditName" required>
+        <label for="subredditName">Subreddit:</label>
+      </div>
+      <div class="user-box">
+        <input type="text" id="postTitle" name="postTitle" required>
+        <label for="postTitle">Başlık:</label>
+      </div>
+    
+      <div id="textPostFields" class="user-box postFields">
+        <textarea id="postText" name="postText" rows="4" required></textarea>
+        <label for="postText">Metin:</label>
+      </div>
+
+      <div id="linkPostFields" class="user-box postFields">
+        <input type="url" id="postUrl" name="postUrl">
+        <label for="postUrl">Link URL:</label>
+      </div>
+      
+      <a href="#" id="submitLink">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        Submit
+      </a>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/createpost.js"></script>
+</body>
+</html>
