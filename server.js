@@ -6,7 +6,8 @@ dotenv.config();
 
 const CreatPost = require('./routes/CreatePost.js');
 const userPosts= require('./routes/UserPosts.js');
-const TopPosts= require('./routes/TopPosts.js');
+const TopPosts = require('./routes/TopPosts.js');
+const LoginIndex = require('./routes/LoginIndex.js');
 
 const app = express();
 const port = process.env.PORT;
@@ -18,10 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/my-posts', userPosts);
 app.use('/create-post', CreatPost);
 app.use('/top-posts',TopPosts);
-
-app.get('/', (req, res) => {
-  res.send('Hoşgeldiniz')
-});
+app.use('/', LoginIndex);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

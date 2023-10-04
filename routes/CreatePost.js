@@ -3,7 +3,6 @@ const CreatePost = express.Router();
 const snoowrap = require('snoowrap');
 const path = require('path');
 const dotenv = require('dotenv');
-const db = require('../db/redditDB');
 
 dotenv.config();
 
@@ -45,11 +44,11 @@ async function createTextPost(subredditName, postTitle, postText) {
       sendReplies: true, // Yanıtlara izin vermek isterseniz true olarak ayarlayın
     });
 
-    console.log('Metin gönderisi başarıyla oluşturuldu.');
+    console.log('Text-only post created successfully');
 
     return post;
   } catch (error) {
-    console.error('Metin gönderisi oluşturma hatası:', error);
+    console.error('Error on creating text-only post:', error);
   }
 }
 
@@ -68,13 +67,13 @@ CreatePost.post('/', async (req, res) => {
     } else if (postType === 'text') {
       result = await createTextPost(subredditName, postTitle, postText);
     } else {
-      throw new Error('Geçersiz post türü.');
+      throw new Error('Invalid post type.');
     }
 
     res.json(result);
   } catch (error) {
     console.error('Hata:', error);
-    res.status(500).json({ error: 'Paylaşım oluşturma hatası' });
+    res.status(500).json({ error: 'Error on post creation' });
   }
 });
 

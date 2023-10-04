@@ -2,7 +2,6 @@ const express = require('express');
 const TopPosts = express.Router();
 const snoowrap = require('snoowrap');
 const dotenv = require('dotenv');
-const db = require('../db/redditDB');
 
 dotenv.config();
 

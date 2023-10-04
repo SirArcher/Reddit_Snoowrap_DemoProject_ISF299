@@ -22,7 +22,6 @@ body {
   border-radius: 10px;
 }
 
-/* H2 başlığı stil ayarları */
 .PostCreation-box h2 {
   margin: 0 0 30px;
   padding: 0;
@@ -30,7 +29,6 @@ body {
   text-align: center;
 }
 
-/* Input ve label stil ayarları */
 .PostCreation-box .user-box {
   position: relative;
 }
@@ -65,7 +63,8 @@ body {
 .PostCreation-box .user-box textarea:focus~label,
 .PostCreation-box .user-box textarea:valid~label,
 .PostCreation-box .user-box select:focus~label,
-.PostCreation-box .user-box select:valid~label {
+.PostCreation-box .user-box select:valid~label,
+#postType option[value="link"]:checked ~ #postUrlBox label{
   top: -20px;
   left: 0;
   color: #03e9f4;
@@ -175,3 +174,4 @@ body {
     bottom: 100%;
   }
 }
+

@@ -1,40 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Reddit Paylaşım Formu</title>
+  <meta charset="UTF-8">
+  <title>Reddit Post Creation Form</title>
   <link href="css/createpost.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="PostCreation-box">
-    <h2>Reddit Paylaşım Formu</h2>
+    <h2>Reddit Post Creation Form</h2>
     <form id="postForm" action="/create-post" method="POST">
-      <div id="postTypeDropdown" class="user-box">
+      <div class="user-box">
         <select id="postType" name="postType">
-          <option value="text">Metin Paylaşımı</option>
-          <option value="link">Link Paylaşımı</option>
+          <option value="text">Only-Text Post</option>
+          <option value="link">Link Post</option>
         </select>
-        <label for="postType">Paylaşım Türü:</label>
-      </div>      
+        <label for="postType">Post Type:</label>
+      </div>
       <div class="user-box">
         <input type="text" id="subredditName" name="subredditName" required>
         <label for="subredditName">Subreddit:</label>
+        <div id="subredditError" style="color: red; display: none;">This subreddit does not exist or is private.</div>
       </div>
       <div class="user-box">
         <input type="text" id="postTitle" name="postTitle" required>
-        <label for="postTitle">Başlık:</label>
+        <label for="postTitle">Title:</label>
       </div>
-    
-      <div id="textPostFields" class="user-box postFields">
-        <textarea id="postText" name="postText" rows="4" required></textarea>
-        <label for="postText">Metin:</label>
+      <div class="user-box" id="postText">
+        <textarea id="postText-textarea" name="postText" rows="4" required></textarea>
+        <label for="postText">Text:</label>
       </div>
-
-      <div id="linkPostFields" class="user-box postFields">
-        <input type="url" id="postUrl" name="postUrl">
-        <label for="postUrl">Link URL:</label>
+      <div class="user-box" id="postUrlBox">
+        <input type="url" id="postUrl-input" name="postUrl" required>
+        <label for="postUrl-input">Link URL:</label>
       </div>
-      
       <a href="#" id="submitLink">
         <span></span>
         <span></span>
@@ -44,7 +43,7 @@
       </a>
     </form>
   </div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="js/createpost.js"></script>
 </body>
 </html>
