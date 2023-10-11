@@ -30,7 +30,6 @@ pleaseWait.get('/process-data', async (req, res) => {
                 `;
             const data = await db.one(insertQuery, [redditId, redditName, accessToken, refreshToken, status, username]);
             req.session.redditId = redditId;
-            console.log('bu çalıştı');
             return data.id;
         } catch (error) {
             console.log(error);
