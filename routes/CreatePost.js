@@ -12,7 +12,8 @@ const db = require('../db/redditDB');
 
 CreatePost.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'createpost.html'))
-
+  const redditId = req.session.redditId;
+  console.log(redditId);
 });
 
 CreatePost.post('/', async (req, res) => {
@@ -92,6 +93,27 @@ CreatePost.post('/', async (req, res) => {
 
 CreatePost.get('/api/checkSubredditExistence/:subredditName', async (req, res) => {
   const subredditName = req.params.subredditName;
+  const redditId = req.session.redditId;
+  
+  async function getAccessTokenByRedditId(redditId) {
+    try {
+      const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1';
+      const result = await db.oneOrNone(query, [redditId]);
+      return result ? result.access_token : null; // Eğer bir sonuç varsa erişim jetonunu döndürün, yoksa null döndürün
+    } catch (error) {
+      throw error;
+    }
+  }
+  const accessToken = await getAccessTokenByRedditId(redditId);
+  
+  // Create a snoowrap client
+  const redditClient = new snoowrap({
+    userAgent: REDDIT_USER_AGENT,
+    clientId: REDDIT_CLIENT_ID,
+    clientSecret: REDDIT_CLIENT_SECRET,
+    accessToken: accessToken
+  });
+
   async function checkSubredditExistence(subredditName) {
     try {
       const subredditInfo = await redditClient.getSubreddit(subredditName).created_utc.then(console.log);//.created_utc.then(console.log) part of this line is not neccessary. 

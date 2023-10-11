@@ -42,7 +42,8 @@ pleaseWait.get('/process-data', async (req, res) => {
             const existingUser = await db.oneOrNone(selectQuery, [username]);
             
             if (existingUser && !existingUser.reddit_id===null) {
-                return true;
+                req.session.redditId = existingUser.reddit_id;
+                return true, req.session.redditId;
             } else {
                 return false;
             }
