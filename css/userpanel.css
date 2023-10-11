@@ -1,0 +1,45 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    background: linear-gradient(#141e30, #243b55); /* Sayfa arkaplanı gradient */
+    min-height: 100vh; /* Sayfa yüksekliği kadar uzansın */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.panel {
+    display: flex;
+    justify-content: flex-start; /* Kutuları soldan sağa doğru sırala */
+    align-items: center;
+    background-color: rgba(240, 240, 240, 0.3); /* Panel arkaplanı transparan gri */
+}
+
+.feature {
+    margin: 10px;
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* Kutuların kare şeklinde olması için boyutlarını ayarla */
+.feature {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.feature:hover {
+    background-color: #2980b9;
+}

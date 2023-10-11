@@ -52,7 +52,7 @@ $(document).ready(function () {
     // Belirtilen süre kadar gecikmeli bir işlem başlat
     delayTimer = setTimeout(async () => {
       try {
-        const response = await fetch(`/api/checkSubredditExistence/${subredditName}`);
+        const response = await fetch(`/create-post/api/checkSubredditExistence/${subredditName}`);
         const data = await response.json();
         const subredditExists = data.subredditExists;
 
@@ -71,7 +71,7 @@ $(document).ready(function () {
       } catch (error) {
         console.error('API Error:', error);
       }
-    }, 1500); // 1,5 saniyelik gecikme
+    }, 1000); // 1 saniyelik gecikme
   });
 
   $('#submitLink').on('click', function (event) {

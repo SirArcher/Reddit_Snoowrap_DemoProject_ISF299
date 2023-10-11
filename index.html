@@ -1,36 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reddit Demo Project</title>
     <link href="css/index.css" rel="stylesheet">
 </head>
-
 <body>
-    <div class="login-box">
-        <h2>Reddit Login</h2>
-        <form id="LoginForm" action="/" method="POST">
+    <div class="container" action="/generate-auth-url">
+        <!-- Kullanıcı adı (user name) giriş formu -->
+        <form id="username-form">
+            <h2>Login with Reddit</h2>
             <div class="user-box">
-                <input type="text" name="username" required="">
-                <label>Username</label>
+                <input type="text" id="username" name="username" required>
             </div>
-            <div class="user-box">
-                <input type="password" name="password" required="">
-                <label>Password</label>
-            </div>
-            <a href="#">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                Sign In
-            </a>
+            <button type="submit" class="reddit-button">
+                <img src="https://static.vecteezy.com/system/resources/previews/018/930/474/large_2x/reddit-logo-reddit-icon-transparent-free-png.png" alt="Reddit Logo" class="reddit-logo">
+                Sign In with Reddit
+            </button>
         </form>
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="js/index.js"></script>
     </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/index.js"></script>
 </body>
-
 </html>
