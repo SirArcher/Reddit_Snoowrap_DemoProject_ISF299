@@ -20,8 +20,9 @@ CreatePost.post('/', async (req, res) => {
   
   async function getAccessTokenByRedditId(redditId) {
     try {
-      const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1';
-      const result = await db.oneOrNone(query, [redditId]);
+      const status = 'ACTIVE';
+      const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1 AND status=$2';
+      const result = await db.oneOrNone(query, [redditId, status]);
       return result ? result.access_token : null; 
     } catch (error) {
       throw error;

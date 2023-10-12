@@ -11,8 +11,9 @@ const db = require('../db/redditDB');
 
 async function getUserDataByRedditId(redditId) {
     try {
-      const query = 'SELECT access_token AND reddit_name FROM redtab WHERE reddit_id = $1';
-      const result = await db.oneOrNone(query, [redditId]);
+      const status = 'ACTIVE';
+      const query = 'SELECT access_token AND reddit_name FROM redtab WHERE reddit_id = $1 AND status $2';
+      const result = await db.oneOrNone(query, [redditId, status]);
       return result ? result.access_token : null; // Eğer bir sonuç varsa erişim jetonunu döndürün, yoksa null döndürün
     } catch (error) {
       throw error;
@@ -21,7 +22,7 @@ async function getUserDataByRedditId(redditId) {
 
 RedditPosts.get('/subreddit-top-posts', async (req, res) => {
   const redditId = req.session.redditId;
-  
+  const subreddit = req.body.subreddit;
   const userdata = await getUserDataByRedditId(redditId);
   
   const redditClient = new snoowrap({
@@ -32,7 +33,7 @@ RedditPosts.get('/subreddit-top-posts', async (req, res) => {
   });
 
   async function getTopPosts() {
-    const subreddit = await redditClient.getSubreddit('wiredpeople');
+    const subreddit = await redditClient.getSubreddit();
     const topPosts = await subreddit.getTop({ limit: 5 });
     console.log(topPosts);
     const postInfo = topPosts.map(post => ({
@@ -57,9 +58,9 @@ RedditPosts.get('/user-posts', async (req, res) => {
       accessToken: userdata.access_token
     });
     try {
-      const me = await redditClient.getMe();// Oturum açmış kullanıcının bilgilerini al
-      const myPosts = await me.getOverview();// Kullanıcının gönderilerini al
-      const myOwnPosts = myPosts.filter(post => post.author.name === userdata.reddit_name);// Sadece kendi oluşturduğunuz gönderileri filtrele
+      const me = await redditClient.getMe();
+      const myPosts = await me.getOverview();
+      const myOwnPosts = myPosts.filter(post => post.author.name === userdata.reddit_name);
       const postDetails = myOwnPosts.map(post => ({
         id: post.id,
         title: post.title,
