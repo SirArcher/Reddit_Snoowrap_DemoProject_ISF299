@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
             var featureName = this.getAttribute('data-feature');
             switch (featureName) {
                 case 'PostCreation':
-                    window.location.href = 'http://127.0.0.1:3000/create-post';
+                    window.location.href = '/create-post';
                     break;
                 case 'RedditPosts':
-                    window.location.href = 'http://127.0.0.1:3000/reddit-posts';
+                    window.location.href = '/reddit-posts';
                     break;
                 default:
                     break;
