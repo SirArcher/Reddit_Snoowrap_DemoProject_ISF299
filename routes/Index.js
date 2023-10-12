@@ -1,17 +1,19 @@
 const express = require('express');
 const index = express.Router();
 const path = require('path');
+const axios = require('axios');
 const snoowrap = require('snoowrap');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const { REDDIT_CLIENT_ID,REDDIT_CLIENT_SECRET, REDDIT_REDIRECT_URL, REDDIT_USER_AGENT } = process.env;
+const { REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_REDIRECT_URL, REDDIT_USER_AGENT } = process.env;
 
 const db = require('../db/redditDB');
 
 index.get('/', async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'))
+  const redditId = req.session.redditId;
 });
 
 index.get('/generate-auth-url', async (req, res) => {
@@ -80,11 +82,12 @@ index.post('/signup-completion', async (req, res) => {
 
 index.get('/checkSubredditExistence/:subredditName', async (req, res) => {
   const subredditName = req.params.subredditName;
-
+  const redditId = req.session.redditId;
   async function getAccessTokenByRedditId(redditId) {
     try {
-      const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1';
-      const result = await db.oneOrNone(query, [redditId]);
+      const status = 'ACTIVE';
+      const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1 AND status= $2';
+      const result = await db.oneOrNone(query, [redditId, status]);
       return result ? result.access_token : null; // If there is a result, return the access token. Otherwise, return null.
     } catch (error) {
       throw error;
@@ -112,6 +115,68 @@ index.get('/checkSubredditExistence/:subredditName', async (req, res) => {
   res.json({ subredditExists });
   console.log(subredditExists);
 });
+
+index.get('/refresh-token', async function (req, res) {
+  async function getRefreshTokens() {
+    try {
+      const query = "SELECT refresh_token, reddit_id, reddit_name, access_token, username, password FROM redtab WHERE status = 'ACTIVE'";
+      const results = await db.manyOrNone(query);
+      if (!results || results.length === 0) {
+        return { refreshArray: [], idArray: [], redditNameArray: [], accessTokenArray: [], usernameArray: [], passwordArray:[]};
+      }
+      const refreshArray = results.map(row => row.refresh_token);
+      const idArray = results.map(row => row.reddit_id);
+      const redditNameArray = results.map(row => row.reddit_name);
+      const accessTokenArray = results.map(row => row.access_token);
+      const usernameArray=results.map(row=>row.username);
+      const passwordArray = results.map(row=>row.password);
+
+      return { refreshArray, idArray, redditNameArray, accessTokenArray, usernameArray, passwordArray };
+    } catch (error) {
+      throw error;
+    }
+  }
+  async function processRefreshTokens() {
+    const { refreshArray, idArray, redditNameArray, accessTokenArray, usernameArray, passwordArray } = await getRefreshTokens();
+    const status = 'ACTIVE';
+  
+    const refreshTokenPromises = refreshArray.map(async (refreshToken, index) => {
+      const redditId = idArray[index];
+      const redditName = redditNameArray[index];
+      const accessToken = accessTokenArray[index];
+      const username = usernameArray[index];
+      const password = passwordArray[index];
+  
+      try {
+        const response = await axios.post('https://www.reddit.com/api/v1/access_token', null, {
+          params: {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken,
+          },
+          auth:{
+            username: REDDIT_CLIENT_ID,
+            password: REDDIT_CLIENT_SECRET
+          }
+        });
+        const newAccessToken = response.data.access_token;
+  
+        if (newAccessToken) {
+          const updateQuery = "UPDATE redtab SET status='EXPIRED' WHERE access_token=$1 AND status='ACTIVE';"; // Update status of the old record
+          const insertQuery = "INSERT INTO redtab(reddit_id, reddit_name, access_token, refresh_token, status, username, password ) VALUES ($1, $2, $3, $4, $5, $6, $7);";//insert into new record by changing only access token
+          await db.none(updateQuery, [accessToken]);
+          await db.none(insertQuery, [redditId, redditName, newAccessToken, refreshToken, status, username, password]);
+        }
+      } catch (error) {
+        console.error('Access token refreshing error:', error);
+      }
+    });
+  
+    // Tüm refresh token'larını işleyin ve bekleyin
+    await Promise.all(refreshTokenPromises);
+  }
+  setTimeInterval(processRefreshTokens, 60*60*1000);
+});
+
 
 index.get('/error', async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'error.html'));
