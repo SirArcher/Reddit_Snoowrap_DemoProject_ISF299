@@ -20,15 +20,16 @@ pleaseWait.get('/', async (req, res) => {
 pleaseWait.get('/process-data', async (req, res) => {
     const authCode = req.session.authCode;
     const username = req.session.username;
-    async function saveData(redditId, redditName, accessToken, refreshToken, status, username) {
+    const password = req.session.password;
+    async function saveData(redditId, redditName, accessToken, refreshToken, status, username, password) {
         try {
             const insertQuery = `
                     UPDATE redtab 
                     SET reddit_id = $1, reddit_name = $2, access_token = $3, refresh_Token = $4, status = $5 
-                    WHERE username = $6
+                    WHERE username = $6 AND password = $7
                     RETURNING id
                 `;
-            const data = await db.one(insertQuery, [redditId, redditName, accessToken, refreshToken, status, username]);
+            const data = await db.one(insertQuery, [redditId, redditName, accessToken, refreshToken, status, username, password]);
             req.session.redditId = redditId;
             return data.id;
         } catch (error) {
@@ -36,12 +37,12 @@ pleaseWait.get('/process-data', async (req, res) => {
             return false;
         }
     }
-    async function checkData(username) {
+    async function checkData(username, password) {
         try {
-            const selectQuery = 'SELECT reddit_id FROM redtab WHERE username = $1';
-            const existingUser = await db.oneOrNone(selectQuery, [username]);
+            const selectQuery = 'SELECT reddit_id FROM redtab WHERE username = $1 AND password = $2';
+            const existingUser = await db.oneOrNone(selectQuery, [username, password]);
             
-            if (existingUser && !existingUser.reddit_id===null) {
+            if (existingUser && existingUser.reddit_id !== null) {
                 req.session.redditId = existingUser.reddit_id;
                 return true, req.session.redditId;
             } else {
@@ -76,14 +77,14 @@ pleaseWait.get('/process-data', async (req, res) => {
             });
             const redditUser = await redditClient.getMe();
             let status = 'ACTIVE';
-            // Reddit verilerini PostgreSQL'e kaydetme işlevini çağırın
             const userId = await saveData(
                 redditUser.id,
                 redditUser.name,
                 response.data.access_token,
                 response.data.refresh_token,
                 status,
-                username
+                username,
+                password
             );
             res.json({ success: true });
         }).catch(error => {

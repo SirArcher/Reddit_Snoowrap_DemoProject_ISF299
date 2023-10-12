@@ -1,9 +1,11 @@
 fetch('/please-wait/process-data', {credentials: 'include'})
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            // Başarılı kayıt işlemi
-            window.location.href = '/userpanel'; // Kullanıcıyı yönlendir
+        if (data.success === true) {
+            window.location.href = '/userpanel'; 
+        }
+        else if (data.success === false) {
+            window.location.href = '/error'; 
         }
     })
     .catch(error => {

@@ -20,11 +20,11 @@ body {
 
 h1 {
     font-size: 2em;
-    color: #d9534f; /* Red color for error message */
+    color: #d9534f; 
 }
 
 p {
     font-size: 1.2em;
     margin-top: 10px;
-    color: #ffffff; /* Dark gray color for additional text */
+    color: #ffffff; 
 }

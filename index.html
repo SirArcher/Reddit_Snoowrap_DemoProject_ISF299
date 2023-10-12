@@ -7,12 +7,17 @@
     <link href="css/index.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container" action="/generate-auth-url">
-        <!-- Kullanıcı adı (user name) giriş formu -->
-        <form id="username-form">
+    <div class="container">
+        <form id="username-form" action="/generate-auth-url">
             <h2>Login with Reddit</h2>
             <div class="user-box">
                 <input type="text" id="username" name="username" required>
+            </div>
+            <div class="user-box">
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="user-box">
+                <a id="signup-anchor" href="/signup">Don't you have an account? Sign up now!</a>
             </div>
             <button type="submit" class="reddit-button">
                 <img src="https://static.vecteezy.com/system/resources/previews/018/930/474/large_2x/reddit-logo-reddit-icon-transparent-free-png.png" alt="Reddit Logo" class="reddit-logo">

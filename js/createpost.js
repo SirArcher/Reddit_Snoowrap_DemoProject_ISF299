@@ -1,13 +1,13 @@
 $(document).ready(function () {
-  // Sayfa yüklendiğinde
+  // When the page is loaded:
   const textPostFields = $('#postText');
   const linkPostFields = $('#postUrlBox');
 
-  // Başlangıçta sadece metin alanını görünür yap
+  // Make visible text post fields in the beginning
   textPostFields.show();
   linkPostFields.hide();
 
-  // Dropdown seçimi değiştiğinde
+  // When dropdown options are changed:
   $('#postType').on('change', function () {
     const selectedValue = $(this).val();
 
@@ -18,60 +18,16 @@ $(document).ready(function () {
       textPostFields.hide();
       linkPostFields.show();
     } else {
-      // Diğer durumlar için gizle
+      // Hide for other cases
       textPostFields.hide();
       linkPostFields.hide();
     }
 
-    // Dropdown seçimi değiştiğinde inputları temizle
+    // If selected dropdown option is changed, clear the text fields
     $('#subredditName').val('');
     $('#postTitle').val('');
     $('#postText-textarea').val('');
     $('#postUrl-input').val('');
-  });
-
-  let lastResponse = null;
-  let delayTimer = null;
-
-  $('#subredditName').on('input', async function () {
-    const subredditName = $(this).val().trim();
-
-    if (!subredditName || $('#subredditError').is(':visible')) {
-      $('#subredditError').hide();
-      return;
-    }
-    // Daha önce alınan cevap varsa ve subredditName aynıysa, yeni bir istek göndermeyin
-    if (lastResponse && lastResponse.subredditName === subredditName) {
-      return;
-    }
-    // Önceki zamanlayıcıyı temizle (eğer varsa)
-    if (delayTimer) {
-      clearTimeout(delayTimer);
-    }
-    // Backend API'ye istek gönderir
-    // Belirtilen süre kadar gecikmeli bir işlem başlat
-    delayTimer = setTimeout(async () => {
-      try {
-        const response = await fetch(`/create-post/api/checkSubredditExistence/${subredditName}`);
-        const data = await response.json();
-        const subredditExists = data.subredditExists;
-
-        // Hata mesajını gösterip gizleme
-        if (!subredditExists) {
-          $('#subredditError').show();
-        } else {
-          $('#subredditError').hide();
-        }
-
-        // Son alınan cevabı güncelle
-        lastResponse = {
-          subredditName,
-          subredditExists,
-        };
-      } catch (error) {
-        console.error('API Error:', error);
-      }
-    }, 1000); // 1 saniyelik gecikme
   });
 
   $('#submitLink').on('click', function (event) {
@@ -92,11 +48,10 @@ $(document).ready(function () {
       postType: postType,
     };
 
-    // Sunucuya POST isteği gönder
     $.ajax({
       url: $('#postForm').attr('action'), // Formun action değerini kullanarak isteği gönderir
       type: 'POST',
-      data: postData, // Verileri doğrudan gönderir, contentType gerekmez
+      data: postData, // It will directly post data to the server without declaring content type
       success: function (data) {
         console.log('Server Response:', data);
       },

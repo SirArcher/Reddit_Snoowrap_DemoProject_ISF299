@@ -8,18 +8,18 @@ $(document).ready(function () {
 $('#username-form').submit(async function (e) {
   e.preventDefault();
   const username = $('#username').val();
+  const password = $('#password').val();
   try {
     const response = await $.ajax({
       url: '/generate-auth-url',
       method: 'POST',
       contentType: 'application/json',
-      data: JSON.stringify({ username }),
+      data: JSON.stringify({ username, password }),
       xhrFields: {
         withCredentials: true 
       }
     });
   } catch (error) {
-    console.error('Kullanıcı adı kaydetme hatası:', error);
-    alert('Kullanıcı adı kaydetme hatası!');
+    console.error('User data saving error:', error);
   }
 });

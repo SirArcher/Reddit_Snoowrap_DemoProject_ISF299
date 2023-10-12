@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 case 'PostCreation':
                     window.location.href = 'http://127.0.0.1:3000/create-post';
                     break;
-                case 'YourPosts':
-                    window.location.href = '#';
+                case 'RedditPosts':
+                    window.location.href = 'http://127.0.0.1:3000/reddit-posts';
                     break;
                 default:
                     break;

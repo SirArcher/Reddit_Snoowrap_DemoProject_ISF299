@@ -6,8 +6,8 @@ body {
 }
 
 .background {
-    background: linear-gradient(#141e30, #243b55); /* Sayfa arkaplanı gradient */
-    min-height: 100vh; /* Sayfa yüksekliği kadar uzansın */
+    background: linear-gradient(#141e30, #243b55); 
+    min-height: 100vh; 
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -16,9 +16,9 @@ body {
 
 .panel {
     display: flex;
-    justify-content: flex-start; /* Kutuları soldan sağa doğru sırala */
+    justify-content: flex-start; 
     align-items: center;
-    background-color: rgba(240, 240, 240, 0.3); /* Panel arkaplanı transparan gri */
+    background-color: rgba(240, 240, 240, 0.3); 
 }
 
 .feature {
@@ -31,7 +31,6 @@ body {
     transition: background-color 0.3s ease;
 }
 
-/* Kutuların kare şeklinde olması için boyutlarını ayarla */
 .feature {
     width: 100px;
     height: 100px;

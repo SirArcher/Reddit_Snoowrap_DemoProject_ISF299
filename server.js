@@ -8,8 +8,7 @@ const crypto = require('crypto');
 dotenv.config();
 
 const CreatPost = require('./routes/CreatePost.js');
-const userPosts= require('./routes/UserPosts.js');
-const TopPosts = require('./routes/TopPosts.js');
+const redditPosts = require('./routes/RedditPosts.js');
 const Index = require('./routes/Index.js');
 const pleaseWait = require('./routes/pleaseWait.js');
 
@@ -30,11 +29,10 @@ app.use('/css', express.static(path.join(__dirname, 'css')));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use('/my-posts', userPosts);
 app.use('/create-post', CreatPost);
-app.use('/top-posts',TopPosts);
 app.use('/', Index);
 app.use('/please-wait',pleaseWait);
+app.use('/reddit-posts',redditPosts);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
