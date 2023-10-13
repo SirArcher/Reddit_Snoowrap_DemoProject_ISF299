@@ -20,7 +20,7 @@ index.get('/generate-auth-url', async (req, res) => {
   const authUrl = await generateAuthUrl();
   async function generateAuthUrl() {
     const authUrl = snoowrap.getAuthUrl({
-      scope: ['identity', 'submit', 'vote'],
+      scope: ['identity', 'submit', 'vote', 'save', 'edit'],
       clientId: REDDIT_CLIENT_ID,
       state: 'fe211bebc52eb3da9bef8db6e63104d3',
       redirectUri: REDDIT_REDIRECT_URL,
@@ -60,9 +60,9 @@ index.post('/signup-completion', async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
-
-    const selectQuery = 'SELECT id FROM redtab WHERE username = $1 AND password = $2';
-    const existingUser = await db.oneOrNone(selectQuery, [username, password]);
+    const status = 'ACTIVE';
+    const selectQuery = 'SELECT id FROM redtab WHERE username = $1 AND password = $2 AND status = $3';
+    const existingUser = await db.oneOrNone(selectQuery, [username, password, status]);
 
     if (existingUser && existingUser.username == username && existingUser.password == password) {
       console.log(existingUser.username, existingUser.password, 'already exists');
@@ -83,9 +83,9 @@ index.post('/signup-completion', async (req, res) => {
 index.get('/checkSubredditExistence/:subredditName', async (req, res) => {
   const subredditName = req.params.subredditName;
   const redditId = req.session.redditId;
-  async function getAccessTokenByRedditId(redditId) {
+  const status = 'ACTIVE';
+  async function getAccessTokenByRedditId(redditId, status) {
     try {
-      const status = 'ACTIVE';
       const query = 'SELECT access_token FROM redtab WHERE reddit_id = $1 AND status= $2';
       const result = await db.oneOrNone(query, [redditId, status]);
       return result ? result.access_token : null; // If there is a result, return the access token. Otherwise, return null.
@@ -93,7 +93,7 @@ index.get('/checkSubredditExistence/:subredditName', async (req, res) => {
       throw error;
     }
   }
-  const accessToken = await getAccessTokenByRedditId(redditId);
+  const accessToken = await getAccessTokenByRedditId(redditId, status);
 
   const redditClient = new snoowrap({
     userAgent: REDDIT_USER_AGENT,
@@ -119,8 +119,9 @@ index.get('/checkSubredditExistence/:subredditName', async (req, res) => {
 index.get('/refresh-token', async function (req, res) {
   async function getRefreshTokens() {
     try {
-      const query = "SELECT refresh_token, reddit_id, reddit_name, access_token, username, password FROM redtab WHERE status = 'ACTIVE'";
-      const results = await db.manyOrNone(query);
+      const status = 'ACTIVE';
+      const query = "SELECT refresh_token, reddit_id, reddit_name, access_token, username, password FROM redtab WHERE status = $1";
+      const results = await db.manyOrNone(query,[status]);
       if (!results || results.length === 0) {
         return { refreshArray: [], idArray: [], redditNameArray: [], accessTokenArray: [], usernameArray: [], passwordArray:[]};
       }
@@ -161,9 +162,9 @@ index.get('/refresh-token', async function (req, res) {
         const newAccessToken = response.data.access_token;
   
         if (newAccessToken) {
-          const updateQuery = "UPDATE redtab SET status='EXPIRED' WHERE access_token=$1 AND status='ACTIVE';"; // Update status of the old record
+          const updateQuery = "UPDATE redtab SET status='EXPIRED' WHERE access_token=$1 AND status=$2;"; // Update status of the old record
           const insertQuery = "INSERT INTO redtab(reddit_id, reddit_name, access_token, refresh_token, status, username, password ) VALUES ($1, $2, $3, $4, $5, $6, $7);";//insert into new record by changing only access token
-          await db.none(updateQuery, [accessToken]);
+          await db.none(updateQuery, [accessToken, status]);
           await db.none(insertQuery, [redditId, redditName, newAccessToken, refreshToken, status, username, password]);
         }
       } catch (error) {
@@ -171,23 +172,26 @@ index.get('/refresh-token', async function (req, res) {
       }
     });
   
-    // Tüm refresh token'larını işleyin ve bekleyin
+    // Process all the refresh tokens and update the access tokens
     await Promise.all(refreshTokenPromises);
   }
-  setTimeInterval(processRefreshTokens, 60*60*1000);
+  processRefreshTokens();
 });
-
 
 index.get('/error', async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'error.html'));
 });
 
-index.get('/userpanel', async (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'html', 'userpanel.html'));
+index.get('/user-navigation', async (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'html', 'user-navigation.html'));
 });
 
 index.get('/reddit-posts', async (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'html', 'redditposts.html'));
+  res.sendFile(path.join(__dirname, '..', 'html', 'redditposts-navigation.html'));
+});
+
+index.get('/reddit-posts/your-post', async (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'html', 'userposts.html'));
 });
 
 module.exports = index;

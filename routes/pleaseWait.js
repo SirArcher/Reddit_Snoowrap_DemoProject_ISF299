@@ -26,7 +26,7 @@ pleaseWait.get('/process-data', async (req, res) => {
             const insertQuery = `
                     UPDATE redtab 
                     SET reddit_id = $1, reddit_name = $2, access_token = $3, refresh_Token = $4, status = $5 
-                    WHERE username = $6 AND password = $7
+                    WHERE username = $6 AND password = $7 AND status IS NULL
                     RETURNING id
                 `;
             const data = await db.one(insertQuery, [redditId, redditName, accessToken, refreshToken, status, username, password]);
@@ -37,10 +37,11 @@ pleaseWait.get('/process-data', async (req, res) => {
             return false;
         }
     }
-    async function checkData(username, password) {
+    const status ='ACTIVE';
+    async function checkData(username, password, status) {
         try {
-            const selectQuery = 'SELECT reddit_id FROM redtab WHERE username = $1 AND password = $2';
-            const existingUser = await db.oneOrNone(selectQuery, [username, password]);
+            const selectQuery = 'SELECT reddit_id FROM redtab WHERE username = $1 AND password = $2 AND status = $3';
+            const existingUser = await db.oneOrNone(selectQuery, [username, password, status]);
             
             if (existingUser && existingUser.reddit_id !== null) {
                 req.session.redditId = existingUser.reddit_id;
@@ -53,7 +54,7 @@ pleaseWait.get('/process-data', async (req, res) => {
             return null;
         }
     }
-    const IsExist = await checkData(username);
+    const IsExist = await checkData(username, password, status);
     if (IsExist==false) {
         const data = {
             grant_type: 'authorization_code',
@@ -76,7 +77,7 @@ pleaseWait.get('/process-data', async (req, res) => {
                 accessToken: response.data.access_token,
             });
             const redditUser = await redditClient.getMe();
-            let status = 'ACTIVE';
+            const status = 'ACTIVE';
             const userId = await saveData(
                 redditUser.id,
                 redditUser.name,
