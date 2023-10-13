@@ -190,8 +190,5 @@ index.get('/reddit-posts', async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'html', 'redditposts-navigation.html'));
 });
 
-index.get('/reddit-posts/your-post', async (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'html', 'userposts.html'));
-});
 
 module.exports = index;
